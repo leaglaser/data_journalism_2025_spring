@@ -240,3 +240,15 @@ No code here; I want you to provide three questions that this data suggests to y
 2.  What is the likelihood of mean seats increasing in the ACES-Cybersecurity department?
 
 3. Why do some minimum seats have 10 or 25 seats?
+
+
+
+
+
+
+``` {r}
+
+candy |>
+  group_by(size) |>
+  summarise(count =n())
+
