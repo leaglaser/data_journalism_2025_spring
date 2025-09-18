@@ -49,7 +49,7 @@ umd_courses |>
 
 **Q3** Which departments offered the most courses in the Fall 2024 term? And which departments in that term have at least one syllabus posted? Answer both of those questions and then compare the top five departments - how are they different?
 
-**A3: Business and Management; Business and Management, Economics, School of Music, Information Studies, Engineering, Professional Masters. Comparing the two, English and Teaching and Learning Policy are in the top 5 for fall 2024 courses but don't rank in the top 50 for departments with at least one syllabus posted. **
+**A3:Business and Management; Business and Management, Economics, School of Music, Information Studies, Engineering, Professional Masters. Comparing the two, English and Teaching and Learning Policy are in the top 5 for fall 2024 courses but don't rank in the top 50 for departments with at least one syllabus posted. **
 
 ```{r}
 courses_fall2024 <- umd_courses |>
@@ -91,7 +91,7 @@ maryland_expenses2 <- maryland_expenses2 |>
 
 ```
 
-**Q6.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab. **A6: How many courses in fall 2020 had the word data in them per department.**
+**Q6.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab. **A6:How many courses in fall 2020 had the word data in them per department.**
 
 ```{r}
 umd_courses |>
