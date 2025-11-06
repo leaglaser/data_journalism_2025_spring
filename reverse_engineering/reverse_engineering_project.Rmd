@@ -6,25 +6,33 @@ date: "2025-10-26"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(dplyr)
+library(stringr)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+**Code Run**
 
 ```{r}
-data <- read.csv("reverse_engineering/updated_feb2024_bln_reuters_climate_finance_2015to2020.csv")
+data <- read.csv("data/updated_feb2024_bln_reuters_climate_finance_2015to2020.csv")
 
 ```
 
-## Including Plots
+**Question 1: “Across the globe, donors reported more than $25 billion in funding they claim is linked to renewable energy. At least another $5.6 billion went to projects they claim would help countries prepare for or respond to climate-related disasters. Many of their reports contain too little detail to verify these claims, Reuters found.”**
 
-You can also embed plots, for example:
+**Answer 1: There are multiple sources of renewable energy that could suggest $25 billion is linked to renewable energy. For example, mitigation, cross-cutting, and crosscutting. There were multiple names for the same types of support so just by filter those key names, we were able to come up with an outcome. This is effective because it brings fourth multiple ways countries organize their findings by certain keywords. Not every country will spell crosscutting with a hyphen but some do. Also, the data was given in scientific notation which isn't quite helpful so turning it into real numerical value was helpful.**
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+renewable_energy <- data |>
+  group_by(type_of_support) |>
+  summarise(total_funding = sum(corrected_usd, na.rm = TRUE)) |>
+  arrange(desc(total_funding))
+
+renewable_energy |>
+  mutate(total_funding = format(total_funding, big.mark = ",", scientific = FALSE))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
