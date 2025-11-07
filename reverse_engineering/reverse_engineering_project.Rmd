@@ -33,6 +33,19 @@ renewable_energy |>
   mutate(total_funding = format(total_funding, big.mark = ",", scientific = FALSE))
 ```
 
+**Question 2: Developed nations reported more than 40,000 direct contributions toward the finance target, totaling more than $182 billion, from 2015 to 2020, the last year for which data is available.**
+
+**Answer 2: **
+
+```{r}
+direct_contributions <- data |>
+  filter(year >= 2015 & year <= 2020) |>
+  arrange(year)
 
 
+
+  
+
+
+```
 
