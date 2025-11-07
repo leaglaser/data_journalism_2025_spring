@@ -26,6 +26,7 @@ Let's revisit some data we've used in the past and turn it into charts. First, l
 ```{r}
 library(tidyverse)
 library(lubridate)
+library(ggplot2)
 ```
 
 The dataset we'll use is 911 overdose calls from Baltimore County in 2022. Let's load it.
@@ -270,9 +271,9 @@ baltco_911_calls_by_date |>
   ggplot() + 
   geom_line(aes(x=date, y=total_calls)) + 
   scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
-  theme(
-    axis.text.x = element_text(angle = 45,  hjust=1)
-  )
+  theme(axis.text.x = element_text(angle = 45,  hjust=1)) +
+  geom_text(aes(label = GEOID), vjust = -0.5, size = 3)
+
 ```
 
 Again, this isn't as pretty as we could make it. But by charting this, we can quickly see some outliers that could guide our reporting.
