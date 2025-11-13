@@ -10,6 +10,7 @@ library(tidyverse)
 library(lubridate)
 library(dplyr)
 library(stringr)
+library(janitor)
 ```
 
 **Code Run**
@@ -17,20 +18,31 @@ library(stringr)
 ```{r}
 data <- read.csv("data/updated_feb2024_bln_reuters_climate_finance_2015to2020.csv")
 
+data |>
+  clean_names()
+
+
 ```
 
-**Question 1: “Across the globe, donors reported more than $25 billion in funding they claim is linked to renewable energy. At least another $5.6 billion went to projects they claim would help countries prepare for or respond to climate-related disasters. Many of their reports contain too little detail to verify these claims, Reuters found.”**
+  **Data explained What is each row? Each row is a different id or characteristic like year, recipient country, money in usd, all attributes of each instance of a wealthy nation "spending money" on climate related efforts. Where did it come from? The data comes from the Reuters-Stanford Climate Finance Project catalog published by Reuters originally but open for public domain.Does it have any known errors? It has a couple errors that make data have N/A until the names are cleaned under certain categories like certain foreign currencies. What does that mean about the caveat? That there is no way to know for 100% certainty what all the data actually is and what numbers they truly are to pin point accuracy. There's no way to know for certain.**
 
-**Answer 1: There are multiple sources of renewable energy that could suggest $25 billion is linked to renewable energy. For example, mitigation, cross-cutting, and crosscutting. There were multiple names for the same types of support so just by filter those key names, we were able to come up with an outcome. This is effective because it brings fourth multiple ways countries organize their findings by certain keywords. Not every country will spell crosscutting with a hyphen but some do. Also, the data was given in scientific notation which isn't quite helpful so turning it into real numerical value was helpful.**
+
+
+**Question 1: From 2015 to 2020, 35 governments reported a total of more than $182 billion in grants, loans, bonds, equity investments and other contributions.”**
+
+**Answer 1:I wanted to see from the 35 governments between 2015 to 2020 how much money was spent toward loans, bonds, equity investments, and other contributions. I created a renamed the corrected_usd to total_sum and rearranged by descending.**
 
 ```{r}
-renewable_energy <- data |>
-  group_by(type_of_support) |>
-  summarise(total_funding = sum(corrected_usd, na.rm = TRUE)) |>
-  arrange(desc(total_funding))
+governments <- data |>
+  group_by(reporting_party) |>
+  summarise(total_sum = sum(corrected_usd)) |>
+  arrange(desc(total_sum))
 
-renewable_energy |>
-  mutate(total_funding = format(total_funding, big.mark = ",", scientific = FALSE))
+governments |>
+  filter(reporting_party != "Monaco") |>
+  summarise(total_sum_excluding_monaco = sum(total_sum))
+
+
 ```
 
 
@@ -45,22 +57,12 @@ direct_contributions <- data |>
 ```
 
 
-**Question 3: France reported a $118.1 million loan to a Chinese bank for environmental initiatives.**
-
-**Answer 3: **
-
-```{r}
-France <- data |>
-   filter(str_detect(tolower(reporting_party), "france"), str_detect(tolower(recipient), "china")) |>
-   summarise(count = n(),total = sum(corrected_usd, na.rm = TRUE))
-```
 
 
 
+**Question 3: Loans totaling $267.5 million for upgrades to a metro system in Mexico**
 
-**Question 4: loans totaling $267.5 million for upgrades to a metro system in Mexico**
-
-**Answer 4:**
+**Answer 3:**
 
 ```{r}
 Mexico <- data |>
@@ -73,23 +75,3 @@ Mexico |>
   filter(str_detect(tolower(recipient), "mexico"))|>
   summarise(count = n(),total = sum(corrected_usd, na.rm = TRUE))
 ```
-
-**Question 5: Germany has contributed $45 billion in climate funding**
-
-**Answer 5:**
-
-```{r}
-germany <- data |>
-  filter(reporting_party == "germany") |>
-  summarise(count = n(),total = sum(corrected_usd, na.rm = TRUE))
-
-```
-
-
-
-
-
-
-
-
-
