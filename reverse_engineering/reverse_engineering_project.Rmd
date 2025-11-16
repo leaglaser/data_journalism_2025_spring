@@ -34,14 +34,18 @@ data |>
 
 ```{r}
 governments <- data |>
+  filter(!is.na(reporting_party)) |>
+  filter(!is.na(corrected_usd)) |>
+  filter(financial_instrument == "Grant" | financial_instrument == "Loan" | financial_instrument == "Equity Investment") |>
   group_by(reporting_party) |>
   summarise(total_sum = sum(corrected_usd)) |>
   arrange(desc(total_sum))
+  
+governments_data <- governments |>
+  filter(total_sum >= 182000000)
 
-governments |>
-  filter(reporting_party != "Monaco") |>
-  summarise(total_sum_excluding_monaco = sum(total_sum))
 
+#fix this question
 
 ```
 
@@ -54,6 +58,8 @@ governments |>
 direct_contributions <- data |>
   filter(year >= 2015 & year <= 2020) |>
   summarise(count = n(),total = sum(corrected_usd, na.rm = TRUE))
+
+#change this question
 ```
 
 
@@ -74,4 +80,7 @@ Mexico |>
 Mexico |>
   filter(str_detect(tolower(recipient), "mexico"))|>
   summarise(count = n(),total = sum(corrected_usd, na.rm = TRUE))
+
+#this code is simply wrong
+#then fix the powerpoint too
 ```
