@@ -11,6 +11,9 @@ library(lubridate)
 library(dplyr)
 library(stringr)
 library(janitor)
+
+options(scipen=999)
+
 ```
 
 **Code Run**
@@ -30,36 +33,33 @@ data |>
 
 **Question 1: From 2015 to 2020, 35 governments reported a total of more than $182 billion in grants, loans, bonds, equity investments and other contributions.”**
 
-**Answer 1:I wanted to see from the 35 governments between 2015 to 2020 how much money was spent toward loans, bonds, equity investments, and other contributions. I created a renamed the corrected_usd to total_sum and rearranged by descending.**
+**Answer 1:I wanted to see from the 35 governments between 2015 to 2020 how much money was spent toward loans, bonds, equity investments, and other contributions. I originally filtered by financial_instruments and searched for  "grant", "loan", "equity investment". I also, grouped by reporting_party and total_sum = sum(corrected_usd) and arranged them by descending sums. This didn't necessarily work because I wasn't finding the specific financial instrument that was 7,000,000,000 from the total $189 billion of all spending. I found "other" that had about $7 billion so I filtered by that financial instrument. **
 
 ```{r}
 governments <- data |>
   filter(!is.na(reporting_party)) |>
   filter(!is.na(corrected_usd)) |>
-  filter(financial_instrument == "Grant" | financial_instrument == "Loan" | financial_instrument == "Equity Investment") |>
-  group_by(reporting_party) |>
-  summarise(total_sum = sum(corrected_usd)) |>
-  arrange(desc(total_sum))
-  
-governments_data <- governments |>
-  filter(total_sum >= 182000000)
+ filter(financial_instrument != "Other") |>
+ summarise(total_sum = sum(corrected_usd)) 
 
-
-#fix this question
-
+governments |>
+ group_by(financial_instrument) |>
+  summarise(total = sum(corrected_usd, na.rm = TRUE)) |>
+  arrange(desc(total))
 ```
 
 
-**Question 2: Developed nations reported more than 40,000 direct contributions toward the finance target, totaling more than $182 billion, from 2015 to 2020, the last year for which data is available.**
+**Question 2: The United States agreed to lend $19.5 million to developers of a Marriott hotel franchise in Cap-Haitien, Haiti.**
 
-**Answer 2: The data starts in 2015 and goes through 2020 and equals about $189,370,929,494 with multiple direct contributions toward the finance target such as funding_source**
+**Answer 2: **
 
 ```{r}
-direct_contributions <- data |>
-  filter(year >= 2015 & year <= 2020) |>
-  summarise(count = n(),total = sum(corrected_usd, na.rm = TRUE))
-
-#change this question
+hotel <- data |>
+  filter(reporting_party == "united states") |>
+  filter(recipient == "haiti") |>
+  filter(if_any(everything(), ~ str_detect(tolower(as.character(.x)), "marriott"))) |>
+  summarise(total_sum = american_dollar) 
+  
 ```
 
 
@@ -81,6 +81,4 @@ Mexico |>
   filter(str_detect(tolower(recipient), "mexico"))|>
   summarise(count = n(),total = sum(corrected_usd, na.rm = TRUE))
 
-#this code is simply wrong
-#then fix the powerpoint too
 ```
