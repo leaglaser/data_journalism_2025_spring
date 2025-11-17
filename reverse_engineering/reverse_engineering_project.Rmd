@@ -51,7 +51,7 @@ governments |>
 
 **Question 2: The United States agreed to lend $19.5 million to developers of a Marriott hotel franchise in Cap-Haitien, Haiti.**
 
-**Answer 2: **
+**Answer 2:I started out by filtering reporting parties to the united states but at first when I did it, I searched with upper case United States then it wouldn't worked so I double checked the data and it's all lowercased so i searched it with lower "u" and "s" and found all the reporting parties of united states. Then I also filtered recipient to be haiti with lowercase and filtered anyword to have marriott because that's what the specific purpose of spending is but I wasn't use which exact column would have the name of the exact spending so i filtered to any column/character. I wanted to summarized the total spending by american dollars because it was more organized and visual to see with commas and I got 19,500,000.00 exactly.**
 
 ```{r}
 hotel <- data |>
@@ -68,9 +68,12 @@ hotel <- data |>
 
 **Question 3: Loans totaling $267.5 million for upgrades to a metro system in Mexico**
 
-**Answer 3:**
+**Answer 3: I started by filtering any key words to "loan" "metro" because there could be multiple columns that have that detail and i wasn't exactly sure which would have it. Then, i filtered to recipients of mexico because that's the country receiving the funding. I ultimately summarized corrected_usd to get a total of 2697776942.**
 
 ```{r}
+Mexico <- data |>
+  filter(recipient == "mexico") 
+
 Mexico <- data |>
   filter(if_any(everything(), ~ str_detect(tolower(as.character(.x)), "loan")))
 
