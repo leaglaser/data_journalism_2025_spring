@@ -83,7 +83,8 @@ md_counties <- counties |>
 
 outages_joined <- md_counties |> 
   left_join(md_elections_2) |>
-  mutate(county = as.character(County))
+  mutate(county = as.character(County)) |>
+  mutate()
 
 outages_joined_new <- outages_joined |>
   left_join(county_outages_cleaned) |>
@@ -105,7 +106,7 @@ Then, calculate a per capita rate of electric & hybrid vehicles using the March 
 
 Finally, make a second county map showing the per capita rate. What counties stand out on this map? How is it different from the first one you made?
 
-**A3: I'm not sure why I keep getting NA is there something I'm forgetting to join? **
+**A3: I'm not sure why I keep getting NA is there something I'm forgetting to join? Allegheny County also had a massive increase.**
 
 ```{r}
 electric_vehicles <- read.csv("data/ev_2020_2023.csv") |>
@@ -117,23 +118,39 @@ counties <- counties()
 md_counties <- counties |>
   filter(STATEFP == "24")
 
-outages_joined <- md_counties |> 
-  left_join(md_elections_2)
+electric_vehicles <- electric_vehicles |>
+  mutate(county = as.character(county))
 
-ev_joined <- outages_joined |> 
-  mutate(county = as.character(County)) |>
-  left_join(electric_vehicles)
+ev <- counties |>
+  left_join(electric_vehicles, by = c("NAME" = "county"))
 
-ev_joined_new <- st_as_sf(ev_joined)
-ggplot(ev_joined) +
+ggplot(ev) +
   geom_sf(aes(fill = pct_change)) +
   scale_fill_viridis_c(option = "magma") +
   theme_minimal()
 
+counties <- counties()
 
-get_acs(geography = "county",
+md_counties <- counties |>
+  filter(STATEFP == "24")
+
+md_county_population <- get_acs(geography = "county",
               variables = c(population = "B01001_001"),
-              year = 2021,
+              year = 2023,
               state = "MD")
+
+ev_joined <- md_county_population |>
+  left_join(electric_vehicles) |>
+  mutate(County = as.character(county))
+
+ev_per_capita <- ev_joined |>
+  mutate(ev_capita = march_2023 / estimate * 1000, ev_capita = march_2023 / estimate * 10000)
+
+ggplot(ev_per_capita) +
+  geom_sf(aes(fill = ev_capita)) +
+  scale_fill_viridis_c(option = "plasma") +
+  theme_minimal()
+
+
 
 ```
