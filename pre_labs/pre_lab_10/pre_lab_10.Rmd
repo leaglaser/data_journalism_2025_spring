@@ -256,7 +256,7 @@ md_county_population <- get_acs(geography = "county",
               state = "MD")
 ```
 
-Ultimately, we're going to join this county table with population with foreclosure notices by county, and then calculate a percentage. But remember, we then want to visualize this data by drawing a zip code map that helps us pick out trends. Thinking ahead, we know we'll need a zip code map shapefile. Fortunately, we can pull this geometry information right from tidycensus at the same time that we pull in the population data by adding "geometry = TRUE" to our get_acs function.
+Ultimately, we're going to join this county table with population with foreclosure notices by county, and then calculate a percentage. But remember, we then want to visualize this data by drawing a zip code map that helps us pick out trends. Thinking ahead, we know we'll need a zip code map shapefile. Fortunately, we can pull this geometry information right from tidycensus at the same time that we pull in the population data by adding " = TRUE" to our get_acs function.
 
 ### Task: Run code
 
