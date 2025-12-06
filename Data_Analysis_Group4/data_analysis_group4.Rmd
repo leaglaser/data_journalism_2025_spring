@@ -1,0 +1,101 @@
+---
+title: "data_analysis_group4"
+authors: "Razak Diallo, Lea Glaser, Deja Jones, Alexander Taylor"
+date: "2025-12-06"
+output: html_document
+---
+
+# Load Libraries
+```{r}
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(tidycensus)
+```
+
+
+# Load and clean data
+```{r}
+
+
+state_payments <- read_csv("data/state_payments.csv") |>
+  clean_names() |>
+  mutate(
+    date = ymd_hms(date),
+    amount = str_replace_all(amount, "\\$", ""),
+    amount = str_replace_all(amount, "\\,", ""),
+    amount = as.numeric(amount)
+         )
+
+glimpse(state_payments)
+
+
+```
+# Question 1: What is the median income of the zip codes where the top five vendors are located?
+# Findings: All five are displayed below. Two of the zip codes have a median income greater than $120,000, one is just under $100,000 and the other, which has the highest amount of payments, has a median income of about $60,000. I would want to look more the last zip code to find because it seems to be an outlier: it has a lower median income but a high amount of payments. 
+
+# NOTE: There doesn't seem to be median income data for 10041. How do you suggest I get around this?
+```{r}
+# Find zip codes with the top five vendors
+
+state_payments |>
+  group_by(date) |>
+  summarise(count = n())
+
+q1_top5 <- state_payments |>
+  group_by(vendor_zip) |>
+  summarise(total_amount = sum(amount)) |>
+  arrange(desc(total_amount)) |>
+  filter(row_number() <= 5)
+
+# Get median income data
+#q1_vars <- load_variables(2023, "acs5", cache = TRUE)
+#B19013_001
+
+
+q1_vars <- load_variables(2023, "acs5", cache = TRUE)
+
+q1_med_income <- get_acs(geography = "zcta", variables = "B19013_001", year = 2023) |>
+  rename(
+    vendor_zip = GEOID,
+    med_income = estimate
+  ) |>
+  select(vendor_zip, med_income)
+
+# Join dataframes
+
+q1_top5 <- q1_top5 |>
+  left_join(q1_med_income)
+
+q1_top5
+
+
+```
+
+# Question 2: What year did the State of Maryland spend the most? How about the least?
+# Findings: The State of Maryland spent the most in 2025, spending $43,703,480,470 and the least was in 2008 (if not counting 2026) where it spent $19,879,214,691
+```{r}
+years <- state_payments |>
+  group_by(fiscal_year) |>
+  summarise(total_spending = sum(amount, na.rm = TRUE)) |>
+  arrange(desc(total_spending))
+
+```
+
+# Question 3: What is the total amount of payments in each zip code?
+# Findings: 
+```{r}
+
+```
+
+# Question 4: How many payments were made each month?
+# Findings: 
+```{r}
+
+```
+
+# Question 5: What agency spent the most money in each county?
+# Findings: 
+```{r}
+
+```
