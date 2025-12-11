@@ -45,31 +45,23 @@ alerts <- read.csv("data/Disciplinary_Alerts_2024.csv") |>
 
 When you finish scraping into a dataframe, write code to find the press releases that have the word "police" in the title.
 
-**A2** 
+**A2: There are 9 press releases that have the word "Police" in it.** 
 
 ```{r}
 url <- "https://www.opd.state.md.us/press-releases"
-page <- read_html(url)
+page <- url |>
+  read_html() |>
+  html_elements('p.wixui-rich-text__text') |>
+  rvest::html_text() |>
+  as.data.frame() |>
+  clean_names() |>
+  rename(press_releases = rvest_html_text_html_elements_read_html_url_p_wixui_rich_text_text) |>
+  separate(press_releases, c("date", "press_releases"), ":") |>
+  filter(!is.na(press_releases))
 
-# get all the list‑entries (the <a> tags under the press-releases list)
-nodes <- page %>% html_elements("a")  
+press_releases <-page |>
+  filter(str_detect(press_releases, "Police"))
 
-# extract the text
-text <- nodes %>% html_text2()
-
-# the text looks like "11/12/2025: Statement from …"
-# so split on the first “:”
-df <- tibble(raw = text) %>%
-  # drop possible empty or non‑release entries
-  filter(str_detect(raw, "^\\s*\\d{1,2}/\\d{1,2}/\\d{4}:")) %>%
-  mutate(
-    date = str_extract(raw, "^\\s*\\d{1,2}/\\d{1,2}/\\d{4}"),
-    title = str_replace(raw, "^\\s*\\d{1,2}/\\d{1,2}/\\d{4}:\\s*", "")
-  ) %>%
-  mutate(
-    date = mdy(date)
-  ) %>%
-  select(date, title)
 
 
 ```
@@ -84,35 +76,32 @@ When you're done, rename the columns so they make sense, then make sure the date
 
 Finally, tell me what questions you could ask of this data if you had all of his press releases. Be creative.
 
-**A3**
+**A3: I'm curious what month is most likely to be the month with the most legislation passed or the most press releases surrounding enacting laws, not necessarily just news but lawmaking? Based on this data, I'm seeing a couple against  Trump so I'm curious how many press releases this year, alone, were around taking down Trump. **
 
 ```{r}
 url <- "https://www.vanhollen.senate.gov/news/press-releases"
-pg  <- read_html(url)
+van <- read_html(url) 
 
-dates <- pg |>
-  html_elements(".article__date") |>
-  html_text(trim = TRUE)
+  
+van_dates <- van |>
+  html_elements('p.Heading--time') |>
+  html_text() |>
+  as_tibble()
 
-dates_new <- data.frame(date = dates)
+van_titles <- van |>
+  html_elements('h2.ArticleTitle') |>
+  html_text() |>
+  as_tibble()
+  
+van_url <- van |>
+  html_elements('a.Link') |>
+  html_text() |>
+  as_tibble()
 
-titles <- pg |>
-  html_elements(".article__title > a") |>
-  html_text(trim = TRUE)
+van_hollen <- bind_cols (van_dates, van_titles, van_url) |>
+  rename (date = value...1) |>
+  rename (title = value...2) |>
+  rename (url = value...3)
 
-titles_new <- data.frame(title = titles)
-
-urls <- pg |>
-  html_elements(".article__title > a") |>
-  html_attr("href") |>
-  str_c("https://www.vanhollen.senate.gov")
-
-urls_new <- data.frame(url = urls)
-
-press_new <- bind_cols(dates_df, titles_df, urls_df)
-
-press_newer <- press_new |>
-  rename(date  = date, title = title, url   = url) |>
-  mutate(date = as.Date(date, format = "%B %d, %Y"))
 
 ```
